@@ -1,15 +1,18 @@
-Author: Aidan Coughlin
-CSCI 3753
+# Multithreaded DNS Resolver
 
-My multi-lookup implementation uses a struct called filename_queue to assign files to
-requester threads. Filenames passed in through the command line are loaded into
-our filename_queue in the main() (also storing the amount of filenames loaded), and requester threads are able to dynamically claim
-files with filename_queue_get(), with access being synchronized through the queue's mutex lock attribute.
-The # of filenames loaded (count) is compared with next_to_process to determine if a requester thread has any filenames left to claim.
+**Author:** Aidan Coughlin  
+**Course:** CSCI 3753
 
-After the requester threads are joined, no more hostnames can be added to the shared array req_res_array.
-Thus, the string "POISON_PILL" is sent into the shared bounded buffer queue req_res_array via an array_put() call for each active resolver thread.
-Resolver threads continuously grabbing hostnames from the queue will detect the poison pill and exit accordingly.
+## Overview
 
-Usage synopsis:
+My multi-lookup implementation uses a struct called `filename_queue` to assign files to requester threads. Filenames passed in through the command line are loaded into our `filename_queue` in `main()` (also storing the amount of filenames loaded), and requester threads are able to dynamically claim files with `filename_queue_get()`, with access being synchronized through the queue's mutex lock attribute.
+
+The number of filenames loaded (`count`) is compared with `next_to_process` to determine if a requester thread has any filenames left to claim.
+
+After the requester threads are joined, no more hostnames can be added to the shared array `req_res_array`. Thus, the string `"POISON_PILL"` is sent into the shared bounded buffer queue `req_res_array` via an `array_put()` call for each active resolver thread. Resolver threads continuously grabbing hostnames from the queue will detect the poison pill and exit accordingly.
+
+## Usage
+
+```
 multi-lookup <# requester> <# resolver> <requester log> <resolver log> [ <data file> ... ]
+```
